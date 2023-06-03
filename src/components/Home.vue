@@ -5,7 +5,9 @@
     </template>
     <template #resume>
       <Resume :label="label" :total-amount="10000" :amount="amount">
-        <template #graphic>graphic</template>
+        <template #graphic>
+          <Graphic :amounts="amounts"></Graphic>
+        </template>
         <template #action>
           <Action></Action>
         </template>
@@ -22,6 +24,7 @@ import Header from './Header.vue'
 import Resume from './Resume/Index.vue'
 import Movements from './Movements/Index.vue'
 import Action from './Action.vue'
+import Graphic from './Resume/Graphic.vue'
 
 export default {
   components: {
@@ -29,12 +32,14 @@ export default {
     Resume,
     Movements,
     Header,
-    Action
+    Action,
+    Graphic
   },
   data() {
     return {
       label: null,
       amount: null,
+      amounts: [1000, 2000, 1500, 450, 780, -780, 200, -300, 0, 250],
       movements: [
         {
           id: 1,
