@@ -42,16 +42,18 @@ const zero = computed(() => {
 const showPointer = ref(false)
 const pointer = ref(0)
 
+const emit = defineEmits(['select'])
+
 const tap = ({ target, touches }) => {
   showPointer.value = true
   const elementWidth = target.getBoundingClientRect().width
   const elementX = target.getBoundingClientRect().x
   const touchX = touches[0].clientX
   pointer.value = ((touchX - elementX) * 300) / elementWidth
+  emit('select', pointer.value)
 }
 
 const untap = () => {
-  console.log('untap')
   showPointer.value = false
 }
 

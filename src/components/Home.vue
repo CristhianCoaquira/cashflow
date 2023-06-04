@@ -9,12 +9,12 @@
           <Graphic :amounts="amounts"></Graphic>
         </template>
         <template #action>
-          <Action></Action>
+          <Action @create="create"></Action>
         </template>
       </Resume>
     </template>
     <template #movements>
-      <Movements :movements="movements"></Movements>
+      <Movements :movements="movements" @remove="remove"></Movements>
     </template>
   </Layout>
 </template>
@@ -39,39 +39,74 @@ export default {
     return {
       label: null,
       amount: null,
-      amounts: [1000, 2000, 1500, 450, 780, -780, 200, -300, 0, 250],
       movements: [
         {
           id: 1,
           title: 'Movimiento',
           description: 'Deposito de salario',
-          amount: 1000
+          amount: 1000,
+          time: new Date('2023-06-04')
         },
         {
           id: 2,
           title: 'Movimiento 1',
           description: 'Deposito de honorarios',
-          amount: 500
+          amount: 500,
+          time: new Date('2023-06-04')
         },
         {
           id: 3,
           title: 'Movimiento 3',
           description: 'Comida',
-          amount: -100
+          amount: -100,
+          time: new Date('2023-06-05')
         },
         {
           id: 4,
           title: 'Movimiento 4',
           description: 'Colegiatura',
-          amount: -1000
+          amount: -500,
+          time: new Date('2023-06-07')
         },
         {
           id: 5,
           title: 'Movimiento 5',
           description: 'Reparación equipo',
-          amount: 1000
+          amount: 500,
+          time: new Date('2023-06-07')
+        },
+        {
+          id: 6,
+          title: 'Movimiento 6',
+          description: 'Reparación equipo',
+          amount: -1500,
+          time: new Date('2023-05-06')
         }
       ]
+    }
+  },
+  computed: {
+    amounts() {
+      const lastDays = this.movements
+        .filter((m) => {
+          const today = new Date()
+          const oldDate = today.setDate(today.getDate() - 30)
+          return m.time > oldDate
+        })
+        .map((m) => m.amount)
+      return lastDays.map((_, i, lastDays) => {
+        const lastMovements = lastDays.slice(0, i + 1)
+        return lastMovements.reduce((accAmount, amount) => accAmount + amount, 0)
+      })
+    }
+  },
+  methods: {
+    create(movement) {
+      this.movements.push(movement)
+    },
+    remove(id) {
+      const index = this.movements.findIndex((m) => m.id === id)
+      this.movements.splice(index, 1)
     }
   }
 }

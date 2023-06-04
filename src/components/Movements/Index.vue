@@ -23,8 +23,10 @@ defineProps({
   }
 })
 
+const emit = defineEmits(['remove'])
+
 const remove = (id) => {
-  console.log('remove', id)
+  emit('remove', id)
 }
 </script>
 <style scoped>
