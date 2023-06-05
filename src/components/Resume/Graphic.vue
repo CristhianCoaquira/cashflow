@@ -13,17 +13,25 @@
         y2="200"
       />
     </svg>
-    <p>Ultimos 30 dias</p>
+    <p>{{ visualDate }}</p>
   </div>
 </template>
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   amounts: {
     type: Array,
     default: () => []
+  },
+  labelDate: {
+    type: String,
+    default: null
   }
+})
+
+const visualDate = computed(() => {
+  return props.labelDate ?? 'Ultimos 30 dias'
 })
 
 const points = computed(() => {
@@ -41,8 +49,14 @@ const zero = computed(() => {
 
 const showPointer = ref(false)
 const pointer = ref(0)
-
 const emit = defineEmits(['select'])
+watch(pointer, (value) => {
+  const index = Math.ceil(value / (300 / props.amounts.length))
+  if (index < 0 || index > props.amounts.length) {
+    emit('select', null)
+  }
+  emit('select', props.amounts[index - 1], index)
+})
 
 const tap = ({ target, touches }) => {
   showPointer.value = true
@@ -50,11 +64,11 @@ const tap = ({ target, touches }) => {
   const elementX = target.getBoundingClientRect().x
   const touchX = touches[0].clientX
   pointer.value = ((touchX - elementX) * 300) / elementWidth
-  emit('select', pointer.value)
 }
 
 const untap = () => {
   showPointer.value = false
+  emit('select', null)
 }
 
 const amountToPixels = (amount) => {

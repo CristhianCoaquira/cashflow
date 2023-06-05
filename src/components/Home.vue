@@ -6,7 +6,7 @@
     <template #resume>
       <Resume :label="label" :total-amount="totalAmount" :amount="amount">
         <template #graphic>
-          <Graphic :amounts="amounts"></Graphic>
+          <Graphic :amounts="amounts" :label-date="labelDate" @select="select"></Graphic>
         </template>
         <template #action>
           <Action @create="create"></Action>
@@ -38,19 +38,21 @@ export default {
   data() {
     return {
       label: null,
+      labelDate: null,
       amount: null,
       movements: []
     }
   },
   computed: {
+    lastMovements() {
+      return this.movements.filter((m) => {
+        const today = new Date()
+        const oldDate = today.setDate(today.getDate() - 30)
+        return m.time > oldDate
+      })
+    },
     amounts() {
-      const lastDays = this.movements
-        .filter((m) => {
-          const today = new Date()
-          const oldDate = today.setDate(today.getDate() - 30)
-          return m.time > oldDate
-        })
-        .map((m) => m.amount)
+      const lastDays = this.lastMovements.map((m) => m.amount)
       return lastDays.map((_, i, lastDays) => {
         const lastMovements = lastDays.slice(0, i + 1)
         return lastMovements.reduce((accAmount, amount) => accAmount + amount, 0)
@@ -82,6 +84,23 @@ export default {
     },
     save() {
       localStorage.setItem('movements', JSON.stringify(this.movements))
+    },
+    select(amount, index = null) {
+      this.amount = amount
+      if (amount !== null && amount !== undefined) {
+        this.label = this.lastMovements[index - 1].title
+        const options = {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric'
+        }
+        this.labelDate = this.lastMovements[index - 1].time.toLocaleString(undefined, options)
+      } else {
+        this.label = null
+        this.labelDate = null
+      }
     }
   }
 }
