@@ -32,7 +32,7 @@ const points = computed(() => {
     const x = (300 / total) * (index + 1)
     const y = amountToPixels(current)
     return `${previous} ${x},${y}`
-  }, '0,100')
+  }, `0,${amountToPixels(props.amounts.length ? props.amounts[0] : 0)}`)
 })
 
 const zero = computed(() => {
@@ -58,8 +58,8 @@ const untap = () => {
 }
 
 const amountToPixels = (amount) => {
-  const min = Math.min(...props.amounts)
-  const max = Math.max(...props.amounts)
+  const min = props.amounts.length ? Math.min(...props.amounts) : 0
+  const max = props.amounts.length ? Math.max(...props.amounts) : 200
   const amountAbs = amount + Math.abs(min)
   const minmax = Math.abs(max) + Math.abs(min)
   return 200 - ((amountAbs * 100) / minmax) * 2

@@ -55,6 +55,9 @@ const submitForm = () => {
     description: description.value,
     time: new Date()
   })
+  title.value = ''
+  amount.value = 0
+  description.value = ''
 }
 </script>
 <style scoped>
